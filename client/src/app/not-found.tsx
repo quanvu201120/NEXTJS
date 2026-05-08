@@ -1,5 +1,5 @@
-"use client";
 import Link from "next/link";
+import BackButton from "@/components/back-button";
 
 export default function NotFound() {
     return (
@@ -15,9 +15,6 @@ export default function NotFound() {
                 </h1>
 
                 <div className="mt-4 space-y-2">
-                    <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-                        Úi! Trang này biến mất rồi
-                    </h2>
                     <p className="text-zinc-500 dark:text-zinc-400 max-w-[400px] mx-auto">
                         Có vẻ như đường dẫn bạn đang truy cập không tồn tại hoặc
                         đã được di chuyển sang một vũ trụ khác.
@@ -32,12 +29,9 @@ export default function NotFound() {
                         Về Trang Chủ
                     </Link>
 
-                    <button
-                        onClick={() => window.history.back()}
-                        className="px-8 py-3 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900 active:scale-95"
-                    >
+                    <BackButton className="px-8 py-3 rounded-full border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium transition-all hover:bg-zinc-50 dark:hover:bg-zinc-900 active:scale-95">
                         Quay Lại
-                    </button>
+                    </BackButton>
                 </div>
             </div>
 

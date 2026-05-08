@@ -34,21 +34,14 @@ export default async function RootLayout({
             className={`${inter.className} h-full antialiased`}
         >
             <body className="min-h-full w-full flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="system"
-                    enableSystem
-                    disableTransitionOnChange
+                <AppProvider
+                    initSessionToken={token?.value || ""}
+                    initExpires={expiresAtSession?.value || ""}
                 >
-                    <AppProvider
-                        initSessionToken={token?.value || ""}
-                        initExpires={expiresAtSession?.value || ""}
-                    >
-                        <ModeToggle />
-                        {children}
-                        <SlideSession />
-                    </AppProvider>
-                </ThemeProvider>
+                    <ModeToggle />
+                    {children}
+                    <SlideSession />
+                </AppProvider>
             </body>
         </html>
     );

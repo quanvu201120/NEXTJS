@@ -1,6 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import LogOutPage from "./login/logout";
 import { cookies } from "next/headers";
+
+export const metadata: Metadata = {
+    title: "Trang chủ | SHOP ABC",
+    description: "Đây là trang chủ",
+};
 
 export default async function Home() {
     const cookiesStore = await cookies();

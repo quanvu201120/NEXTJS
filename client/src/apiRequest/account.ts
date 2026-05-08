@@ -1,9 +1,12 @@
 import { http } from "@/lib/http";
-import { UpdateMeBodyType } from "@/schemaValidations/account.schema";
+import {
+    AccountResType,
+    UpdateMeBodyType,
+} from "@/schemaValidations/account.schema";
 
 export const AccountApiRequest = {
     me: (sesstionToken: string, signal?: AbortSignal | null | undefined) =>
-        http.get("/account/me", {
+        http.get<AccountResType>("/account/me", {
             headers: {
                 Authorization: `Bearer ${sesstionToken}`,
             },

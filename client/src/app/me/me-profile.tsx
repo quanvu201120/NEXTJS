@@ -43,6 +43,7 @@ export function MeProfile({ profile }: UpdateProfileType) {
     const router = useRouter();
 
     async function onSubmit(formData: UpdateMeBodyType) {
+        if (formData.name === profile.name) return;
         try {
             const result = await AccountApiRequest.updateMe(formData);
             router.refresh();

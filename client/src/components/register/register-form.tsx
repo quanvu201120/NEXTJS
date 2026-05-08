@@ -23,7 +23,7 @@ import {
 } from "@/schemaValidations/auth.schema";
 import { http } from "@/lib/http";
 import { useRouter } from "next/navigation";
-import { HandleErrorFormApi } from "@/lib/utils";
+import { HandelErrorFormApi } from "@/lib/utils";
 import { AuthApiRequest } from "@/apiRequest/auth";
 
 export function RegisterForm() {
@@ -55,7 +55,7 @@ export function RegisterForm() {
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-            HandleErrorFormApi(error, form.setError);
+            HandelErrorFormApi(error, form.setError);
         }
     }
 

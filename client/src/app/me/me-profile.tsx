@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoginResType } from "@/schemaValidations/auth.schema";
 import { useRouter } from "next/navigation";
-import { HandleErrorFormApi } from "@/lib/utils";
+import { HandelErrorFormApi } from "@/lib/utils";
 import { AuthApiRequest } from "@/apiRequest/auth";
 import {
     AccountResType,
@@ -48,7 +48,7 @@ export function MeProfile({ profile }: UpdateProfileType) {
             router.refresh();
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-            HandleErrorFormApi(error, form.setError);
+            HandelErrorFormApi(error, form.setError);
         }
     }
 

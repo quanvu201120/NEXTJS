@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export const HandleErrorFormApi = (
+export const HandelErrorFormApi = (
     error: any,
     setError?: UseFormSetError<any>,
 ) => {
@@ -21,7 +21,7 @@ export const HandleErrorFormApi = (
             });
         });
     } else {
-        console.error("HandleErrorFormApi:", error);
+        console.error("HandelErrorFormApi:", error);
     }
 };
 

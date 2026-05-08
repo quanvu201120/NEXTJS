@@ -3,7 +3,6 @@
 import { ProductApiRequest } from "@/apiRequest/product";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import DeleteProduct from "../../components/product/delete-product";
 
 export default async function ProductPage() {
     const res = await ProductApiRequest.get();
@@ -48,14 +47,6 @@ export default async function ProductPage() {
                                 currency: "VND",
                             }).format(product.price)}
                         </p>
-                        <div className="flex justify-end gap-2 pt-2 border-t mt-auto">
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href={`/products/${product.id}`}>
-                                    Sửa
-                                </Link>
-                            </Button>
-                            <DeleteProduct id={product.id} />
-                        </div>
                     </div>
                 ))}
             </div>

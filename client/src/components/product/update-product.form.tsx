@@ -1,4 +1,5 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -16,41 +17,62 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-    RegisterBody,
-    RegisterBodyType,
-    RegisterResType,
-} from "@/schemaValidations/auth.schema";
-import { http } from "@/lib/http";
+
 import { useRouter } from "next/navigation";
 import { HandleErrorFormApi } from "@/lib/utils";
-import { AuthApiRequest } from "@/apiRequest/auth";
+import {
+    CreateProductBody,
+    CreateProductBodyType,
+    ProductResType,
+} from "@/schemaValidations/product.schema";
+import { Textarea } from "../ui/textarea";
+import { ProductApiRequest } from "@/apiRequest/product";
+import { useState } from "react";
+import Image from "next/image";
 
-export function RegisterForm() {
-    const form = useForm<RegisterBodyType>({
-        resolver: zodResolver(RegisterBody),
+export function UpdateProductForm(detail: ProductResType["data"]) {
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const form = useForm<CreateProductBodyType>({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resolver: zodResolver(CreateProductBody) as any,
         defaultValues: {
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
+            price: detail.price,
+            description: detail.description,
+            image: detail.image,
+            name: detail.name,
         },
     });
 
     const router = useRouter();
 
-    async function onSubmit(formData: RegisterBodyType) {
-        try {
-            const result = await AuthApiRequest.register(formData);
+    async function onSubmit(formData: CreateProductBodyType) {
+        const isUnchanged =
+            formData.name === detail.name &&
+            formData.price === detail.price &&
+            formData.description === detail.description &&
+            formData.image === detail.image;
+        if (isUnchanged) {
+            return;
+        }
 
-            const { token, expiresAt } = (result?.payload as RegisterResType)
-                .data;
-            const result_api_cookie = await AuthApiRequest.auth(
-                token,
-                expiresAt,
-            );
-            // eslint-disable-next-line react-hooks/immutability
-            router.replace("/");
+        try {
+            let imageUrl = "";
+            if (formData.image !== detail.image) {
+                const formDataImageUpload = new FormData();
+                formDataImageUpload.append("file", imageFile as Blob);
+                const resUploadImage =
+                    await ProductApiRequest.uploadImage(formDataImageUpload);
+                imageUrl = resUploadImage?.payload.data as string;
+            } else {
+                imageUrl = detail.image;
+            }
+
+            const result = await ProductApiRequest.update(detail.id, {
+                ...formData,
+                image: imageUrl,
+            });
+
+            console.log("update product ", result);
             router.refresh();
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,9 +82,9 @@ export function RegisterForm() {
     }
 
     return (
-        <Card className="w-full sm:max-w-md">
+        <Card className="w-[70vw]">
             <CardHeader>
-                <CardTitle>REGISTER ACCOUNT</CardTitle>
+                <CardTitle>PRODUCT DETAIL</CardTitle>
             </CardHeader>
             <CardContent>
                 <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
@@ -72,14 +94,40 @@ export function RegisterForm() {
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="form-rhf-demo-title">
+                                    <FieldLabel htmlFor="form-rhf-demo-name">
                                         Name
                                     </FieldLabel>
                                     <Input
+                                        type="text"
                                         {...field}
-                                        id="form-rhf-demo-title"
+                                        id="form-rhf-demo-name"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your name"
+                                        placeholder="Enter product name"
+                                        autoComplete="off"
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError
+                                            errors={[fieldState.error]}
+                                        />
+                                    )}
+                                </Field>
+                            )}
+                        />
+
+                        <Controller
+                            name="price"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="form-rhf-demo-price">
+                                        Price
+                                    </FieldLabel>
+                                    <Input
+                                        type="number"
+                                        {...field}
+                                        id="form-rhf-demo-price"
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="Enter product price"
                                         autoComplete="off"
                                     />
                                     {fieldState.invalid && (
@@ -91,20 +139,33 @@ export function RegisterForm() {
                             )}
                         />
                         <Controller
-                            name="email"
+                            name="image"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="form-rhf-demo-title">
-                                        Email
+                                    <FieldLabel htmlFor="form-rhf-demo-image">
+                                        Image
                                     </FieldLabel>
                                     <Input
-                                        type="email"
-                                        {...field}
-                                        id="form-rhf-demo-title"
+                                        type="file"
+                                        accept="image/*"
+                                        onBlur={field.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                        id="form-rhf-demo-image"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your email"
+                                        placeholder="Enter product price"
                                         autoComplete="off"
+                                        onChange={(e) => {
+                                            const file = e.target?.files?.[0];
+                                            if (file) {
+                                                setImageFile(file);
+                                                field.onChange(
+                                                    "http://localhost:2999/" +
+                                                        file.name,
+                                                );
+                                            }
+                                        }}
                                     />
                                     {fieldState.invalid && (
                                         <FieldError
@@ -114,45 +175,35 @@ export function RegisterForm() {
                                 </Field>
                             )}
                         />
-                        <Controller
-                            name="password"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="form-rhf-demo-title">
-                                        Password
-                                    </FieldLabel>
-                                    <Input
-                                        {...field}
-                                        type="password"
-                                        id="form-rhf-demo-title"
-                                        aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your password"
-                                        autoComplete="off"
-                                    />
-                                    {fieldState.invalid && (
-                                        <FieldError
-                                            errors={[fieldState.error]}
-                                        />
-                                    )}
-                                </Field>
-                            )}
+
+                        <Image
+                            src={
+                                imageFile
+                                    ? URL.createObjectURL(imageFile)
+                                    : detail.image
+                            }
+                            alt=""
+                            width={200}
+                            height={200}
+                            className=" object-cover mt-4"
+                            unoptimized
                         />
+
                         <Controller
-                            name="confirmPassword"
+                            name="description"
                             control={form.control}
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="form-rhf-demo-title">
-                                        Confirm Password
+                                    <FieldLabel htmlFor="form-rhf-demo-des">
+                                        Description
                                     </FieldLabel>
-                                    <Input
+                                    <Textarea
                                         {...field}
-                                        id="form-rhf-demo-title"
+                                        id="form-rhf-demo-des"
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your confirm password"
+                                        placeholder="Enter product description"
                                         autoComplete="off"
-                                        type="password"
+                                        rows={3}
                                     />
                                     {fieldState.invalid && (
                                         <FieldError
@@ -170,12 +221,20 @@ export function RegisterForm() {
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => form.reset()}
+                        onClick={() => {
+                            form.reset();
+                            setImageFile(null);
+                        }}
+                        disabled={form.formState.isSubmitting}
                     >
                         Reset
                     </Button>
-                    <Button type="submit" form="form-rhf-demo">
-                        Register
+                    <Button
+                        type="submit"
+                        form="form-rhf-demo"
+                        disabled={form.formState.isSubmitting}
+                    >
+                        Cập nhật
                     </Button>
                 </Field>
             </CardFooter>

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const privatePath = ["/me"];
+const privatePath = ["/me", "/products"];
 const authPath = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
@@ -21,5 +21,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/me", "/login", "/register"],
+    matcher: ["/me", "/products/:path*", "/login", "/register"],
 };

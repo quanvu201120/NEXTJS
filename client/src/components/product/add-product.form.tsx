@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { useRouter } from "next/navigation";
-import { HandelErrorFormApi } from "@/lib/utils";
+import { HandleErrorFormApi } from "@/lib/utils";
 import {
     CreateProductBody,
     CreateProductBodyType,
@@ -68,7 +68,7 @@ export function AddProductForm() {
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-            HandelErrorFormApi(error, form.setError);
+            HandleErrorFormApi(error, form.setError);
         }
     }
 

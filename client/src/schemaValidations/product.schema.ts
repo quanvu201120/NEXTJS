@@ -1,8 +1,8 @@
 import z from "zod";
-
+const MAX_INT = 2147483647;
 export const CreateProductBody = z.object({
     name: z.string().min(1).max(256),
-    price: z.coerce.number().positive(),
+    price: z.coerce.number().positive().max(MAX_INT),
     description: z.string().max(10000),
     image: z.string().url(),
 });
@@ -12,7 +12,7 @@ export type CreateProductBodyType = z.TypeOf<typeof CreateProductBody>;
 export const ProductSchema = z.object({
     id: z.number(),
     name: z.string(),
-    price: z.coerce.number(),
+    price: z.coerce.number().max(MAX_INT),
     description: z.string(),
     image: z.string(),
     createdAt: z.date(),
